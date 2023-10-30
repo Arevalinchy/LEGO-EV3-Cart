@@ -1,3 +1,6 @@
+"""
+Se importan las librerías necesarias
+"""
 #!/usr/bin/env pybricks-micropython
 from pybricks.hubs import EV3Brick
 from pybricks.ev3devices import (Motor, TouchSensor, ColorSensor,
@@ -8,55 +11,135 @@ from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile
 
 
-# This program requires LEGO EV3 MicroPython v2.0 or higher.
-# Click "Open user guide" on the EV3 extension tab for more information.
-
-
+"""
+Se llama a los motores
+"""
 # Create your objects here.
 ev3 = EV3Brick()
-motorEV3 = Motor(Port.A) # rueda derecha
-motorEV3_2 = Motor(Port.D) # rueda izquierda
+motorEV3 = Motor(Port.A)  # Rueda derecha
+motorEV3_2 = Motor(Port.D)  # Rueda izquierda
 motorEV3_3 = Motor(Port.B) #elevación garra
 motorEV3_4 = Motor(Port.C) #presión garra
 
+"""
+Se definen valores iniciales
+"""
 
-# Write your program here.
-wait(1000)
-# a = ev3.buttons.pressed()
-# while len(a) == 0:
-#     motorEV3_2.run(-500)
-#     motorEV3.run(-500)
-    
-#     a = ev3.buttons.pressed()
-
-# motorEV3_2.hold()
-# motorEV3.hold()
+robot = DriveBase(motorEV3_2,motorEV3,56,220)
+speed = 200 # velocidad mm/s equivalente 20 cm/s
+distancia = 500 # Una distancia inicial de 50 cm
+angulo = 90 #Angulo en grados
+robot.settings(speed)
 
 
+"""
+Movimiento del robot
+"""
 
-# for i in range(2):
+#funcion que lleva el robot hacia adelante, ajusta la velocidad, mueve y luego se detiene.
+def adelante(speed,distancia):
+    robot.settings(speed)
+    robot.straight(-distancia)   
+    robot.stop()
+#Funcion pensada para subir la rampa, esta contempla el movimiento completo
+def subirRampa(speed,distancia):
+    robot.settings(speed)
+    robot.straight(-distancia)
+    robot.stop()    
 
-#     motorEV3_4.run(1000)  
-#     wait(1000)
-#     motorEV3_4.hold()
+#Simulamos la subida de la rampa y el giro de 90 grados
+adelante(speed,distancia)
+subirRampa(speed/2,1420)
+adelante(speed,distancia/2)
+robot.turn(-90)
+robot.stop()
+adelante(speed,distancia)
 
-#     motorEV3_3.run(200)  
-#     wait(500)
-#     motorEV3_3.hold()
+# ------------------------------------------------------------------------------------------------------------------
+# Lo trabajado el 30 oct
+# ------------------------------------------------------------------------------------------------------------------
+# Función para realizar un giro en función de un ángulo en grados
+def girar(angulo, velocidad, distancia_entre_ruedas):
+    # Convertir el ángulo de grados a radianes
+    angulo_radianes = math.radians(angulo)
 
-#     motorEV3_4.run(-1000)  
-#     wait(1000)
-#     motorEV3_4.hold()
+    # Calcular el radio de giro (la mitad de la distancia entre ruedas)
+    radio_giro = distancia_entre_ruedas / 2
 
-#     motorEV3_3.run(-200)  
-#     wait(500)
-#     motorEV3_3.hold()
+    # Calcular la distancia recorrida por cada rueda
+    distancia_rueda = radio_giro * angulo_radianes # distancia en centímetros
 
+    # Configurar la velocidad de las ruedas
+    motorEV3.run(velocidad)
+    motorEV3_2.run(velocidad)
 
-# if len(a) != 0:
-#     ev3.screen.draw_box(10,10,40,40)
-#     ev3.screen.print("hola mundo")
-#     ev3.screen.clear()
-#     a.clear()
-# wait(1000)
-# print("finito")
+    # Realizar el giro bloqueando una rueda y dejando que la otra se mueva
+    if angulo > 0:
+        motorEV3_2.run_target(velocidad, distancia_rueda)
+    else:
+        motorEV3.run_target(velocidad, distancia_rueda)
+
+    # Esperar a que el giro se complete
+    wait(1000)
+
+    # Detener ambas ruedas
+    motorEV3.stop()
+    motorEV3_2.stop()
+
+# ---
+# Función para realizar un giro en un semicírculo
+def girar_semici­rculo(velocidad, radio, distancia_entre_ruedas):
+    # Calcular la distancia que debe recorrer cada rueda
+    distancia_rueda = math.pi * radio  # Semicírculo, por lo que usamos pi
+
+    # Configurar la velocidad de las ruedas
+    motorEV3.run(velocidad)
+    motorEV3_2.run(velocidad)
+
+    # Realizar el giro bloqueando una rueda y dejando que la otra se mueva
+    if radio > 0:
+        motorEV3_2.run_target(velocidad, distancia_rueda)
+    else:
+        motorEV3.run_target(velocidad, distancia_rueda)
+
+    # Esperar a que el giro se complete
+    wait(1000)
+
+    # Detener ambas ruedas
+    motorEV3.stop()
+    motorEV3_2.stop()
+
+"""
+Movimiento de la garra
+"""
+
+# Función para subir la garra
+def subir_garra(velocidad, tiempo):
+    motorEV3_3.run(velocidad)
+    wait(tiempo)
+    motorEV3_3.hold()
+
+# Función para bajar la garra
+def bajar_garra(velocidad, tiempo):
+    motorEV3_3.run(-velocidad)
+    wait(tiempo)
+    motorEV3_3.hold()
+
+# Función para apretar la garra
+def apretar_garra(velocidad, tiempo):
+    motorEV3_4.run(velocidad)
+    wait(tiempo)
+    motorEV3_4.hold()
+
+# Función para abrir la garra
+def abrir_garra(velocidad, tiempo):
+    motorEV3_4.run(-velocidad)
+    wait(tiempo)
+    motorEV3_4.hold()
+
+# Función para reiniciar la garra a una posición específica
+def reiniciar_garra():
+    motorEV3_3.run_target(200, 0)  # Mover motorEV3_3 a la posición inicial
+    motorEV3_4.run_target(1000, 0)  # Mover motorEV3_4 a la posición inicial
+    motorEV3_3.hold()
+    motorEV3_4.hold()
