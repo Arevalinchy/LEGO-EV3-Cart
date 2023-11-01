@@ -70,16 +70,12 @@ def reiniciar_garra():
     motorEV3_4.hold()
 
 
-# bajar_garra(500,1000)
-# apretar_garra(700,1000)
-# subir_garra(400,1000)
-# wait(2000)
-# bajar_garra(100,1000)
-# #abrir_garra(1000,1000)
-# subir_garra(100,1000)
-# reiniciar_garra()
-
 # abrir_garra()
 bajar_garra()
 apretar_garra()
 subir_garra()
+wait(1000)
+bajar_garra()
+abrir_garra()
+subir_garra()
+reiniciar_garra()
