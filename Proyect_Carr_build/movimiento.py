@@ -27,6 +27,7 @@ def adelante(speed,distancia):
     robot.straight(-distancia)   
     robot.stop()
 #Funcion pensada para subir la rampa, esta contempla el movimiento completo
+
 def subirRampa(speed,distancia):
     robot.settings(speed)
     robot.straight(-distancia/2)
@@ -35,20 +36,25 @@ def subirRampa(speed,distancia):
     robot.straight(-distancia/2)
     robot.stop()
   
-def girar_derecha():
+def giro_derecha():
     robot.turn(-90)
     robot.stop()
   
 
-def girar_izquierda():
+def giro_izquierda():
     robot.turn(90)
     robot.stop()
-def giro_Completo():
+def giro_completo():
     robot.turn(180)
     robot.stop()
 
 
-adelante(speed,distancia)
+# adelante(speed,distancia/2)
+# giro_derecha()
+# adelante(speed,distancia/2)
+# giro_izquierda()
+# adelante(speed,distancia/2)
+# giro_completo()
 
 
 # ------------------------------------------------------------------------------------------------------------------
@@ -83,28 +89,30 @@ def girar(angulo, velocidad, distancia_entre_ruedas):
     motorEV3_2.stop()
 
 # # ---
-# # Función para realizar un giro en un semicírculo
-# def girar_semici­rculo(velocidad, radio, distancia_entre_ruedas):
-#     # Calcular la distancia que debe recorrer cada rueda
-#     distancia_rueda = math.pi * radio  # Semicírculo, por lo que usamos pi
+# Función para realizar un giro en un semicírculo
+def girar_semicirculo(speed, radio, distancia_entre_ruedas = 220):
+    # Calcular la distancia que debe recorrer cada rueda
+    distancia_rueda = math.pi * radio  # Semicírculo, por lo que usamos pi
 
-#     # Configurar la velocidad de las ruedas
-#     motorEV3.run(velocidad)
-#     motorEV3_2.run(velocidad)
+    # Configurar la velocidad de las ruedas
+    motorEV3.run(velocidad)
+    motorEV3_2.run(velocidad)
 
-#     # Realizar el giro bloqueando una rueda y dejando que la otra se mueva
-#     if radio > 0:
-#         motorEV3_2.run_target(velocidad, distancia_rueda)
-#     else:
-#         motorEV3.run_target(velocidad, distancia_rueda)
+    # Realizar el giro bloqueando una rueda y dejando que la otra se mueva
+    if radio > 0:
+        motorEV3_2.run_target(velocidad, distancia_rueda)
+    else:
+        motorEV3.run_target(velocidad, distancia_rueda)
 
-#     # Esperar a que el giro se complete
-#     wait(1000)
+    # Esperar a que el giro se complete
+    wait(1000)
 
-#     # Detener ambas ruedas
-#     motorEV3.stop()
-#     motorEV3_2.stop()
+    # Detener ambas ruedas
+    motorEV3.stop()
+    motorEV3_2.stop()
 
+
+girar_semicirculo(speed, 10)
 # '''
 # Movimiento de la garra
 # '''
