@@ -29,16 +29,26 @@ def adelante(speed,distancia):
 #Funcion pensada para subir la rampa, esta contempla el movimiento completo
 def subirRampa(speed,distancia):
     robot.settings(speed)
-    robot.straight(-distancia)
-    robot.stop()    
+    robot.straight(-distancia/2)
+    robot.stop()
+    robot.settings(speed/2)
+    robot.straight(-distancia/2)
+    robot.stop()
+  
+def girar_derecha():
+    robot.turn(-90)
+    robot.stop()
+  
 
-#Simulamos la subida de la rampa y el giro de 90 grados
+def girar_izquierda():
+    robot.turn(90)
+    robot.stop()
+def giro_Completo():
+    robot.turn(180)
+    robot.stop()
+
+
 adelante(speed,distancia)
-# subirRampa(speed/2,1420)
-# adelante(speed,distancia/2)
-# robot.turn(-90)
-# robot.stop()
-# adelante(speed,distancia)
 
 
 # ------------------------------------------------------------------------------------------------------------------
