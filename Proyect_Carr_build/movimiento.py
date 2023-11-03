@@ -14,7 +14,7 @@ motorEV3 = Motor(Port.A)  # Rueda derecha
 motorEV3_2 = Motor(Port.D)  # Rueda izquierda
 motorEV3_3 = Motor(Port.B) #elevación garra
 motorEV3_4 = Motor(Port.C) #presión garra
-
+dist_llantas= 2200 #distancia entre llantas
 robot = DriveBase(motorEV3_2,motorEV3,56,220)
 speed = 200 # velocidad mm/s equivalente 20 cm/s
 distancia = 5000 # Una distancia inicial de 50 cm
@@ -26,118 +26,86 @@ def adelante(speed,distancia):
     robot.settings(speed)
     robot.straight(-distancia)   
     robot.stop()
-#Funcion pensada para subir la rampa, esta contempla el movimiento completo
 
-def subirRampa(speed,distancia):
-    robot.settings(speed)
-    robot.straight(-distancia/2)
+#Funcion pensada para subir la rampa, esta contempla el movimiento completo
+def subirRampa():
+    robot.settings(1000)
+    robot.straight(-1900)
     robot.stop()
-    robot.settings(speed/2)
-    robot.straight(-distancia/2)
-    robot.stop()
-  
+
+#355
 def giro_derecha():
     robot.turn(-90)
     robot.stop()
   
-
 def giro_izquierda():
-    robot.turn(90)
+    robot.turn(100)
     robot.stop()
+
 def giro_completo():
     robot.turn(180)
     robot.stop()
+def giro(grados):
+    robot.turn(grados) #- a la izquierda + a la derecha
+    robot.stop()
 
-
-# adelante(speed,distancia/2)
-# giro_derecha()
-# adelante(speed,distancia/2)
-# giro_izquierda()
-# adelante(speed,distancia/2)
-# giro_completo()
-
-
-# ------------------------------------------------------------------------------------------------------------------
-# Lo trabajado el 30 oct
-# ------------------------------------------------------------------------------------------------------------------
-# Función para realizar un giro en función de un ángulo en grados
-def girar(angulo, velocidad, distancia_entre_ruedas):
-    # Convertir el ángulo de grados a radianes
-    angulo_radianes = math.radians(angulo)
-
-    # Calcular el radio de giro (la mitad de la distancia entre ruedas)
-    radio_giro = distancia_entre_ruedas / 2
-
-    # Calcular la distancia recorrida por cada rueda
-    distancia_rueda = radio_giro * angulo_radianes # distancia en centímetros
-
-    # Configurar la velocidad de las ruedas
-    motorEV3.run(velocidad)
-    motorEV3_2.run(velocidad)
-
-    # Realizar el giro bloqueando una rueda y dejando que la otra se mueva
-    if angulo > 0:
-        motorEV3_2.run_target(velocidad, distancia_rueda)
-    else:
-        motorEV3.run_target(velocidad, distancia_rueda)
-
-    # Esperar a que el giro se complete
-    wait(1000)
-
-    # Detener ambas ruedas
+def giro_de_arco_der(speed,r, w=220):
+    coef = (2*r - w) / (2*r + w)
+    motorEV3.run(-abs(coef*speed)) #derecha
+    motorEV3_2.run(-speed) #izquierda
+    wait(5000) # 5000ms = 5s
     motorEV3.stop()
     motorEV3_2.stop()
 
-# # ---
-# Función para realizar un giro en un semicírculo
-def girar_semicirculo(speed, radio, distancia_entre_ruedas = 220):
-    # Calcular la distancia que debe recorrer cada rueda
-    distancia_rueda = math.pi * radio  # Semicírculo, por lo que usamos pi
-
-    # Configurar la velocidad de las ruedas
-    motorEV3.run(velocidad)
-    motorEV3_2.run(velocidad)
-
-    # Realizar el giro bloqueando una rueda y dejando que la otra se mueva
-    if radio > 0:
-        motorEV3_2.run_target(velocidad, distancia_rueda)
-    else:
-        motorEV3.run_target(velocidad, distancia_rueda)
-
-    # Esperar a que el giro se complete
-    wait(1000)
-
-    # Detener ambas ruedas
-    motorEV3.stop()
+def giro_de_arco_izq(speed,r, w=220):
+    coef = (2*r - w) / (2*r + w)
+    motorEV3_2.run(-abs(coef*speed)) #derecha
+    motorEV3.run(-speed) #izquierda
+    wait(5000) # 5000ms = 5s
     motorEV3_2.stop()
-
-
-girar_semicirculo(speed, 10)
+    motorEV3.stop()
 # '''
 # Movimiento de la garra
 # '''
 
 # Función para subir la garra
-def subir_garra(velocidad, tiempo):
-    motorEV3_3.run(velocidad)
-    wait(tiempo)
-    motorEV3_3.hold()
-
-# Función para bajar la garra
-def bajar_garra(velocidad, tiempo):
+""""
+NO MODIFICAR NINGUNO DE LOS VALORES DE VELOCIDAD
+"""
+def subir_garra():
+    velocidad = 750
+    tiempo = 2500
     motorEV3_3.run(-velocidad)
     wait(tiempo)
     motorEV3_3.hold()
 
+# Función para bajar la garra
+""""
+NO MODIFICAR NINGUNO DE LOS VALORES DE VELOCIDAD
+"""
+def bajar_garra():
+    velocidad = 100
+    tiempo = 1200
+    motorEV3_3.run(velocidad)
+    wait(tiempo)
+    motorEV3_3.hold()
+
 # Función para apretar la garra
-def apretar_garra(velocidad, tiempo):
-    motorEV3_4.run(velocidad)
+def apretar_garra():
+    velocidad = 500
+    tiempo = 2150
+    motorEV3_4.run(-velocidad)
     wait(tiempo)
     motorEV3_4.hold()
 
 # Función para abrir la garra
-def abrir_garra(velocidad, tiempo):
-    motorEV3_4.run(-velocidad)
+""""
+NO MODIFICAR NINGUNO DE LOS VALORES DE VELOCIDAD
+"""
+def abrir_garra():
+    velocidad = 500
+    tiempo = 1551
+    motorEV3_4.run(velocidad)
     wait(tiempo)
     motorEV3_4.hold()
 
@@ -147,6 +115,79 @@ def reiniciar_garra():
     motorEV3_4.run_target(1000, 0)  # Mover motorEV3_4 a la posición inicial
     motorEV3_3.hold()
     motorEV3_4.hold()
+
+def recoger_objeto():
+    bajar_garra()
+    apretar_garra()
+    subir_garra()
+
+def dejar_objeto():
+    bajar_garra()
+    abrir_garra()
+    subir_garra()
+
+"""
+
+Aquí se programará la rutina.
+Solo se deben llamar las funciones
+
+"""
+
+# wait(20000)
+# adelante(5000,1000)
+# recoger_objeto()
+# wait(5000)
+# adelante(5000,1000)
+# giro_izquierda()
+# adelante(5000,300)
+# dejar_objeto()
+# giro(95)
+# wait(2000)
+# giro_de_arco(450,280) 
+# con 200 hace menos de 90 grados pero más de 45
+#con 450 se obtiene un ángulo de 112 grados
+
+# wait(10000)
+# adelante(1000,1000) # +- un metro (98.5 cms siendo exacto)
+# wait(5000)
+# adelante(1000,1000)
+# wait(5000)
+# adelante(1000,1000)
+# wait(5000)
+# adelante(1000,1000)
+# wait(5000)
+
+# adelante(1000,1000)
+# wait(5000)
+# adelante(200,1000)
+# wait(5000)
+# subirRampa()
+
+# giro_de_arco(500,210)
+
+# Prueba en pista 1
+# adelante(1000,711)
+# subirRampa()
+# adelante(1000,500)
+# giro(-86)
+# adelante(1000,813)
+# recoger_objeto()
+# adelante(1000,813)
+# giro_de_arco(300,250)
+# adelante(1000,558)
+# giro_de_arco(300,250)
+# giro(86) # pero en realidad son 58, es por el desfase
+# adelante(1000,742)
+# giro(-52) # pero en realidad son 48, es por el desfase
+# adelante(1000,700)
+# giro(54) # pero en realidad son 50, es por el desfase
+# adelante(1000,853)
+
+# giro_de_arco_izq(440,500) # 190,200 para dar la curva
+giro_de_arco_izq(374,344) # para una curva que mide 58
+motorEV3_2.run(-180)
+wait(1000)
+motorEV3_2.stop()
 
 
 
